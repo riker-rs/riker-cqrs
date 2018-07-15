@@ -1,0 +1,17 @@
+[package]
+name = "riker-cqrs"
+version = "0.1.0"
+authors = ["Lee Smith <leenozara@gmail.com>"]
+description = "Provides Command Query Responsibility Separation for Riker applications"
+homepage = "http://riker.rs/persistence#cqrs"
+license = "MIT"
+readme = "README"
+
+[dependencies]
+riker = "0.1.0"
+config = "0.8"
+log = { version = "0.4", features = ["std"] }
+    
+[dev-dependencies]
+riker-default = "0.1.0"
+riker-testkit = "0.1.0"
