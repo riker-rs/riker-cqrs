@@ -5,7 +5,7 @@ authors = ["Lee Smith <leenozara@gmail.com>"]
 description = "Provides Command Query Responsibility Separation for Riker applications"
 homepage = "http://riker.rs/persistence#cqrs"
 license = "MIT"
-readme = "README"
+readme = "README.md"
 
 [dependencies]
 riker = "0.1.0"
