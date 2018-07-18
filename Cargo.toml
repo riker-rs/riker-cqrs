@@ -4,8 +4,10 @@ version = "0.1.0"
 authors = ["Lee Smith <leenozara@gmail.com>"]
 description = "Provides Command Query Responsibility Separation for Riker applications"
 homepage = "http://riker.rs/persistence#cqrs"
+repository = "https://github.com/riker-rs/riker-cqrs"
 license = "MIT"
 readme = "README.md"
+keywords = ["CQRS", "event sourcing"]
 
 [dependencies]
 riker = "0.1.0"
