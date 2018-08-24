@@ -7,7 +7,7 @@ homepage = "http://riker.rs/persistence#cqrs"
 repository = "https://github.com/riker-rs/riker-cqrs"
 license = "MIT"
 readme = "README.md"
-keywords = ["CQRS", "event sourcing"]
+keywords = ["CQRS", "event_sourcing"]
 
 [dependencies]
 riker = "0.1.5"
