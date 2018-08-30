@@ -1,6 +1,6 @@
 [package]
 name = "riker-cqrs"
-version = "0.1.5"
+version = "0.1.7"
 authors = ["Lee Smith <leenozara@gmail.com>"]
 description = "Provides Command Query Responsibility Separation for Riker applications"
 homepage = "https://riker.rs/persistence#cqrs"
@@ -10,10 +10,10 @@ readme = "README.md"
 keywords = ["CQRS", "event_sourcing"]
 
 [dependencies]
-riker = "0.1.5"
+riker = "0.1.7"
 config = "0.8"
 log = { version = "0.4", features = ["std"] }
     
 [dev-dependencies]
-riker-default = "0.1.5"
+riker-default = "0.1.7"
 riker-testkit = "0.1.0"
