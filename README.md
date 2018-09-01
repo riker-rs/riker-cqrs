@@ -23,12 +23,15 @@ Let's look at how to set up an entity manager that represents bank accounts `Ban
 `Cargo.toml`:
 ```toml
 [dependencies]
-riker = "0.1.0"
-riker-default = "0.1.0"
+riker = "0.1.7"
+riker-default = "0.1.7"
+riker-cqrs = "0.1.7"
 ```
 
 Code:
 ```rust
+use riker::actors::*;
+use riker_default::DefaultModel;
 use riker_cqrs::*;
 
 let model: DefaultModel<TestMsg> = DefaultModel::new();
