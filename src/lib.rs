@@ -45,6 +45,7 @@ struct EntityActor<Pro, Msg: Message> {
     name: String,
     props: Pro,
     instances: HashMap<String, EntityInstance<Msg>>,
+    ids: HashMap<ActorId, String>,
     sleep_after: Duration,
 }
 
@@ -62,6 +63,7 @@ impl<Pro, Msg> EntityActor<Pro, Msg>
             name,
             props: instance_fact,
             instances: HashMap::new(),
+            ids: HashMap::new(),
             sleep_after: Duration::from_secs(conf.sleep_after_secs)
         };
         Box::new(actor)
@@ -87,7 +89,10 @@ impl<Pro, Msg> EntityActor<Pro, Msg>
                 actor: entity,
                 last_used: SystemTime::now()
             };
-            self.instances.insert(id, entity);
+
+            let uid = entity.actor.uri.uid;
+            self.instances.insert(id.clone(), entity);
+            self.ids.insert(uid, id);
         }
     }
 
@@ -108,6 +113,7 @@ impl<Pro, Msg> EntityActor<Pro, Msg>
         // stop instances
         for instance in stop.into_iter() {
             ctx.stop(&instance.1.actor);
+            self.ids.remove(&instance.1.actor.uri.uid);
         }
 
         // keep instances that are not due to sleep
@@ -125,12 +131,17 @@ impl<Pro, Msg> Actor for EntityActor<Pro, Msg>
     type Msg = Msg;
 
     fn pre_start(&mut self, ctx: &Context<Msg>) {
+        let msg = ChannelMsg::Subscribe(SysTopic::ActorTerminated.into(), ctx.myself());
+        ctx.system.event_stream().tell(msg, None);
         Self::schedule_tick(ctx);
     }
 
     fn receive(&mut self, _: &Context<Msg>, _: Msg, _: Option<ActorRef<Msg>>) {}
 
-    fn other_receive(&mut self, ctx: &Context<Msg>, msg: ActorMsg<Msg>, sender: Option<ActorRef<Msg>>) {
+    fn other_receive(&mut self,
+                    ctx: &Context<Msg>,
+                    msg: ActorMsg<Msg>,
+                    sender: Option<ActorRef<Msg>>) {
         match msg {
             ActorMsg::CQ(cq) => {
                 match cq {
@@ -142,6 +153,22 @@ impl<Pro, Msg> Actor for EntityActor<Pro, Msg>
                 Self::schedule_tick(ctx);
             }
             _ => {}
+        }
+    }
+
+    fn system_receive(&mut self,
+                    _: &Context<Self::Msg>,
+                    msg: SystemMsg<Self::Msg>,
+                    _sender: Option<ActorRef<Self::Msg>>) {
+        if let SystemMsg::Event(evt) = msg {
+            match evt {
+                SystemEvent::ActorTerminated(a) => {
+                    if let Some(id) = self.ids.remove(&a.uri.uid) {
+                        self.instances.remove(&id);
+                    }
+                }
+                _ => {}
+            }
         }
     }
 }
@@ -251,7 +278,10 @@ mod tests {
     impl Actor for BankAccountActor {
         type Msg = TestMsg;
         
-        fn receive(&mut self, ctx: &Context<TestMsg>, msg: TestMsg, _: Option<ActorRef<TestMsg>>) {
+        fn receive(&mut self,
+                    ctx: &Context<TestMsg>,
+                    msg: TestMsg,
+                    _: Option<ActorRef<TestMsg>>) {
             match self.state {
                 Some(_) => self.update_account(ctx, msg),
                 None => self.create_account(ctx, msg)
