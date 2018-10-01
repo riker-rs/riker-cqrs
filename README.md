@@ -23,9 +23,9 @@ Let's look at how to set up an entity manager that represents bank accounts `Ban
 `Cargo.toml`:
 ```toml
 [dependencies]
-riker = "0.1.7"
-riker-default = "0.1.7"
-riker-cqrs = "0.1.7"
+riker = "0.1.8"
+riker-default = "0.1.8"
+riker-cqrs = "0.1.8"
 ```
 
 Code:
