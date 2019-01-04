@@ -1,5 +1,3 @@
-extern crate config;
-extern crate riker;
 #[macro_use]
 extern crate log;
 
@@ -16,7 +14,9 @@ pub trait EntityActorProps : Clone + Send + Sync {
     fn props(&self, id: String) -> BoxActorProd<Self::Msg>;
 }
 
-impl<Msg: Message, T: EntityActorProps<Msg=Msg>> EntityActorProps for Arc<Mutex<T>> {
+impl<Msg, T> EntityActorProps for Arc<Mutex<T>>
+    where Msg: Message, T: EntityActorProps<Msg=Msg>
+{
     type Msg = Msg;
 
     fn props(&self, id: String) -> BoxActorProd<Self::Msg> {
@@ -54,7 +54,11 @@ impl<Pro, Msg> EntityActor<Pro, Msg>
     fn props(name: &str,
             instance_fact: Pro,
             conf: EntityActorConfig) -> BoxActorProd<Msg> {
-        Props::new_args(Box::new(Self::actor), (name.into(), instance_fact, conf))
+        Props::new_args(
+            Box::new(Self::actor),
+            (name.into(),
+            instance_fact, conf)
+        )
     }
 
     fn actor((name, instance_fact, conf): (String, Pro, EntityActorConfig)) -> BoxActor<Msg> {
@@ -103,7 +107,9 @@ impl<Pro, Msg> EntityActor<Pro, Msg>
         let threshhold = SystemTime::now() - self.sleep_after;
 
         let (stop, keep): (Vec<(String, EntityInstance<Msg>)>, Vec<(String, EntityInstance<Msg>)>) =
-            self.instances.drain().partition(|&(_, ref instance)| threshhold > instance.last_used);
+            self.instances
+                .drain()
+                .partition(|&(_, ref instance)| threshhold > instance.last_used);
 
         // stop instances
         for instance in stop.into_iter() {
@@ -130,7 +136,10 @@ impl<Pro, Msg> Actor for EntityActor<Pro, Msg>
 
     fn receive(&mut self, _: &Context<Msg>, _: Msg, _: Option<ActorRef<Msg>>) {}
 
-    fn other_receive(&mut self, ctx: &Context<Msg>, msg: ActorMsg<Msg>, sender: Option<ActorRef<Msg>>) {
+    fn other_receive(&mut self,
+                    ctx: &Context<Msg>,
+                    msg: ActorMsg<Msg>,
+                    sender: Option<ActorRef<Msg>>) {
         match msg {
             ActorMsg::CQ(cq) => {
                 match cq {
@@ -167,14 +176,11 @@ impl<'a> From<&'a Config> for EntityActorConfig {
 
 #[cfg(test)]
 mod tests {
-    extern crate riker;
-    extern crate riker_default;
-
     use std::{thread, time};
     use riker::actors::*;
-    use self::riker_default::DefaultModel;
+    use riker_default::DefaultModel;
 
-    use {Entity, EntityActorProps};
+    use crate::{Entity, EntityActorProps};
 
     #[derive(Clone, Debug)]
     pub enum TestMsg {
@@ -251,7 +257,10 @@ mod tests {
     impl Actor for BankAccountActor {
         type Msg = TestMsg;
         
-        fn receive(&mut self, ctx: &Context<TestMsg>, msg: TestMsg, _: Option<ActorRef<TestMsg>>) {
+        fn receive(&mut self,
+                    ctx: &Context<TestMsg>,
+                    msg: TestMsg,
+                    _: Option<ActorRef<TestMsg>>) {
             match self.state {
                 Some(_) => self.update_account(ctx, msg),
                 None => self.create_account(ctx, msg)
