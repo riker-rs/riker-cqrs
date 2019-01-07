@@ -1,6 +1,6 @@
 [package]
 name = "riker-cqrs"
-version = "0.2.0"
+version = "0.2.2"
 authors = ["Lee Smith <leenozara@gmail.com>"]
 edition = "2018"
 description = "Provides Command Query Responsibility Separation for Riker applications"
