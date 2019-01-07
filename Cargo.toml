@@ -11,10 +11,10 @@ readme = "README.md"
 keywords = ["CQRS", "event_sourcing", "actors"]
 
 [dependencies]
-riker = "0.2.0"
+riker = "0.2.2"
 config = "0.9"
 log = { version = "0.4", features = ["std"] }
     
 [dev-dependencies]
-riker-default = "0.2.0"
+riker-default = "0.2.2"
 riker-testkit = "0.1.0"
