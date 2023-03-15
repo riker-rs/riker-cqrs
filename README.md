@@ -39,7 +39,7 @@ let sys = ActorSystem::new(&model).unwrap();
 
 let em = Entity::new(&sys,
                     BankAccountProps,
-                    "BankAccont",
+                    "BankAccount",
                     None).unwrap();
 ```
 
